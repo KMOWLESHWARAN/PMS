@@ -1,0 +1,21 @@
+'use strict';
+const {
+  Model
+} = require('sequelize');
+module.exports = (sequelize, DataTypes) => {
+  class Category extends Model {
+    static associate(models) {
+      Category.associate = (models) => {
+        Category.hasMany(models.Product, { foreignKey: "category_id" });
+      };
+    }
+  }
+  Category.init({
+    name: DataTypes.STRING,
+    parent_id: DataTypes.INTEGER
+  }, {
+    sequelize,
+    modelName: 'Category',
+  });
+  return Category;
+};
