@@ -20,6 +20,9 @@ app.use("/api/auth", authRoutes);
 const userRoutes = require("./routes/userRoutes");
 app.use("/api/user", userRoutes);
 
+const productRouter = require("./routes/productRoutes");
+app.use("/api/product",productRouter);
+
 // const cookieParser = require("cookie-parser");
 // app.use(cookieParser());
 

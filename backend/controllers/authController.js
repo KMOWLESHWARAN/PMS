@@ -31,10 +31,12 @@ const registerUser = async (req, res) => {
         })
     }
 }
+
 const loginUser = async (req, res) => {
 
     try {
         const { email, password } = req.body;
+
         const user = await User.findOne({ where: { email } });
 
         if (!user) {
@@ -58,14 +60,16 @@ const loginUser = async (req, res) => {
         );
 
         res.cookie("token", token, {
-            httponly: true,
+            httpOnly: true,
             secure: true,
-            maxAge: 60 * 60 * 1000,
+            maxAge: 24 * 60 * 60 * 1000,
         });
         res.json({ message: "Login successful" });
     } catch (err) {
+        console.error("Login error:", err);
         res.status(500).json({
-            message: "Server error"
+            message: "Server error",
+            error: err.message
         });
     }
 };
