@@ -21,10 +21,10 @@ const userRoutes = require("./routes/userRoutes");
 app.use("/api/user", userRoutes);
 
 const productRouter = require("./routes/productRoutes");
-app.use("/api/product",productRouter);
+app.use("/api/products", productRouter);
 
-// const cookieParser = require("cookie-parser");
-// app.use(cookieParser());
+const categoryRouter = require("./routes/categoryRoutes");
+app.use("/api/category", categoryRouter);
 
 const PORT = 5000;
 app.listen(PORT, () => {

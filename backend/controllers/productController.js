@@ -1,4 +1,4 @@
-const Product = require("../models");
+const { Product, Category } = require("../models");
 
 const createProduct = async (req, res) => {
     try {
@@ -17,8 +17,20 @@ const createProduct = async (req, res) => {
         });
 
     } catch (err) {
+        console.error("Error creating product:", err);
+        res.status(500).json({ message: "Internal Error", error: err.message })
+    }
+};
+
+const getProducts = async (req, res) => {
+    try {
+        const product = await Product.findAll({ include: Category });
+
+        res.json(product);
+    } catch (err) {
+        console.log("Error fetching products:", err);
         res.status(500).json({ message: "Internal Error" })
     }
 };
 
-module.exports = { createProduct };
+module.exports = { createProduct, getProducts };
