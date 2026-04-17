@@ -1,7 +1,7 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
 import CategoryModal from '@/components/CategoryModal';
-import { createCategory,getCategories,updateCategory,deleteCategory } from '../../api/category';
+import { createCategory, getCategories, updateCategory, deleteCategory } from '../../api/category';
 
 function CategoryPage() {
     const [openModel, setOpenModel] = useState(false);
@@ -31,8 +31,9 @@ function CategoryPage() {
             alert("Deleted");
             fetchCategories();
         } catch (err) {
-            console.error(err);
-            alert("Failed");
+            console.error("Delete error:", err);
+            console.error("Error response:", err.response?.data);
+            alert(`Failed: ${err.response?.data?.message || err.message}`);
         }
     };
 
@@ -91,10 +92,10 @@ function CategoryPage() {
                     editData={editData}
                     onSubmit={async (data) => {
                         try {
-                            if(editData){
-                                await updateCategory(editData.id,data);
+                            if (editData) {
+                                await updateCategory(editData.id, data);
                                 alert("Updated")
-                            }else{
+                            } else {
                                 await createCategory(data);
                                 alert("Created");
                             }

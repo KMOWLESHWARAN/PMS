@@ -1,4 +1,5 @@
-const { Category } = require("../models");
+const { Category, Product } = require("../models");
+const { Op } = require("sequelize");
 
 const createCategory = async (req, res) => {
     try {
@@ -74,6 +75,17 @@ const deleteCategory = async (req, res) => {
         if (!category) {
             return res.status(404).json({ message: "Category not found" });
         }
+
+        const othersCategory = await Category.findOne({ where: { name: { [Op.like]: 'Others' } } });
+
+        if (!othersCategory) {
+            return res.status(400).json({ message: "Please create an 'Others' category first" });
+        }
+
+        await Product.update(
+            { category_id: othersCategory.id },
+            { where: { category_id: id } }
+        );
 
         await category.destroy();
 
