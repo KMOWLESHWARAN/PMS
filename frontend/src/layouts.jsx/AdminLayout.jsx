@@ -7,7 +7,7 @@ function AdminLayout({ children }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
-    <div className="flex h-screen">
+    <div className="flex min-h-screen">
 
       <div className="{`${isCollapsed ? 'w-20' : 'w-56'}} bg-gray-900 text-white p-5 transition-all duration-600">
 
@@ -27,7 +27,7 @@ function AdminLayout({ children }) {
         </div>
       </div>
 
-      <div className="flex-1 bg-gray-100 p-6">
+      <div className="flex-1 bg-gray-100 p-6 overflow-y-auto">
         {children}
       </div>
 

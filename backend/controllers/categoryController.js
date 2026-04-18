@@ -1,4 +1,4 @@
-const { Category, Product } = require("../models");
+const { Category, Product, sequelize } = require("../models");
 const { Op } = require("sequelize");
 
 const createCategory = async (req, res) => {
@@ -26,7 +26,10 @@ const createCategory = async (req, res) => {
 const getCategories = async (req, res) => {
     try {
         const categories = await Category.findAll({
-            order: [['id', 'ASC']]
+            order: [
+                [sequelize.literal("CASE WHEN name = 'Others' THEN 1 ELSE 0 END"),'ASC'],
+                ['id', 'ASC']
+            ]
         });
 
         res.status(200).json(categories);

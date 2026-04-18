@@ -2,7 +2,7 @@ import React from 'react'
 import { useState, useEffect } from 'react';
 import CategoryModal from '@/components/CategoryModal';
 import { createCategory, getCategories, updateCategory, deleteCategory } from '../../api/category';
-
+import { Trash,Pencil } from 'lucide-react';
 function CategoryPage() {
     const [openModel, setOpenModel] = useState(false);
     const [categories, setCategories] = useState([]);
@@ -68,14 +68,14 @@ function CategoryPage() {
                                         className='text-blue-500 hover:underline'
                                         onClick={() => handleEdit(cat)}
                                     >
-                                        Edit
+                                        <Pencil size={15}/>
                                     </button>
 
                                     <button
                                         className='text-red-500 hover:underline'
                                         onClick={() => handleDelete(cat.id)}
                                     >
-                                        Delete
+                                        <Trash size={15}/>
                                     </button>
                                 </td>
                             </tr>
