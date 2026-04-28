@@ -215,7 +215,7 @@ function ProductList() {
             alert("Export failed");
         }
     };
-    
+
     useEffect(() => {
         setCurrentPage(1);
         fetchProducts(1);
@@ -290,9 +290,20 @@ function ProductList() {
                         ))}
                     </select>
 
-                    <button className='bg-blue-600 text-white px-4 py-2 rounded col-span-2'>
-                        {editP ? "Update Product" : "Create Product"}
-                    </button>
+                    <div className='col-span-2 flex gap-2'>
+                        <button type="submit" className='bg-blue-600 text-white px-4 py-2 rounded flex-1'>
+                            {editP ? "Update Product" : "Create Product"}
+                        </button>
+                        {editP && (
+                            <button
+                                type="button"
+                                onClick={resetForm}
+                                className='bg-gray-400 text-white px-4 py-2 rounded flex-1'
+                            >
+                                Cancel
+                            </button>
+                        )}
+                    </div>
                 </form>
 
                 <div className="flex gap-3 mt-4">
@@ -318,7 +329,7 @@ function ProductList() {
             <div>
                 <input
                     type="text"
-                    placeholder='search products..'
+                    placeholder='search products'
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     className='w-full px-3 py-2'
@@ -342,7 +353,6 @@ function ProductList() {
                     </button>
                 ))}
             </div>
-
 
             <div className='flex justify-between items-center my-2'>
                 <div className='text-gray-700'>
