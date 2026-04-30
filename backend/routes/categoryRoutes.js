@@ -6,7 +6,7 @@ const { isAdmin, verifyToken } = require("../middleware/authMiddleware");
 
 
 router.post("/create", verifyToken, isAdmin, createCategory);
-router.get("/", verifyToken, isAdmin, getCategories);
+router.get("/", verifyToken, getCategories);
 router.delete("/:id", verifyToken, isAdmin, deleteCategory);
 router.put("/:id", verifyToken, isAdmin, updateCategory);
 

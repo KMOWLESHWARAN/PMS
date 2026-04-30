@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getCategories } from '../../api/category';
-import { createProduct, getProduct, updateProduct, deleteProduct, bulkImportProducts, exportProducts } from '../../api/product';
-import { Trash, Pencil, LayoutTemplate } from 'lucide-react';
+import { createProduct, getProduct, updateProduct, deleteProduct, bulkImportProducts, exportProducts, approveProduct } from '../../api/product';
+import { Trash, Pencil, LayoutTemplate, CheckCircle } from 'lucide-react';
 import VariantModal from '@/components/VariantModal';
 import { createVariant, deleteVariant, updateVariant } from '../../api/variant';
 import toast from 'react-hot-toast';
@@ -9,6 +9,7 @@ import toast from 'react-hot-toast';
 function ProductList() {
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
+    const [userRole, setUserRole] = useState("");
     const [categoryId, setCategoryId] = useState("");
     const [title, setTitle] = useState("");
     const [brand, setBrand] = useState("");
@@ -33,6 +34,15 @@ function ProductList() {
     const [totalProducts, setTotalProducts] = useState(0);
 
     useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                setUserRole(payload.role);
+            } catch (e) {
+                console.error("Token parsing error", e);
+            }
+        }
         fetchCategories();
     }, []);
 
@@ -194,6 +204,16 @@ function ProductList() {
         }
     };
 
+    const handleApprove = async (id) => {
+        try {
+            await approveProduct(id);
+            toast.success("Product Approved");
+            fetchProducts(currentPage);
+        } catch (err) {
+            toast.error(err.response?.data?.message || "Failed to approve product");
+        }
+    };
+
     const handleExport = async () => {
         try {
             const data = await exportProducts();
@@ -342,7 +362,6 @@ function ProductList() {
                 >
                     All
                 </button>
-
                 {categories.map((c) => (
                     <button
                         key={c.id}
@@ -359,7 +378,6 @@ function ProductList() {
                     Total Products: {totalProducts}
                 </div>
             </div>
-
             <div className='grid grid-cols-3 gap-4'>
                 {products.length === 0 ? (
                     <div className='col-span-3 text-center text-gray-500'>No products found.</div>
@@ -370,7 +388,7 @@ function ProductList() {
                             <p>{p.description}</p>
                             <p>Brand: {p.brand}</p>
                             <p>Category: {p.Category?.name}</p>
-                            <div className='flex gap-2 mt-3'>
+                            <div className='flex gap-2 mt-3 items-center'>
                                 <button onClick={() => handleEdit(p)}>
                                     <Pencil size={16} />
                                 </button>
@@ -385,12 +403,19 @@ function ProductList() {
                                 >
                                     Add Variant
                                 </button>
+                                {userRole === "admin" && p.status?.toLowerCase() !== "approved" && (
+                                    <button 
+                                        onClick={() => handleApprove(p.id)}
+                                        className="text-green-600 flex items-center gap-1 hover:text-green-800 ml-auto"
+                                    >
+                                        <CheckCircle size={16} /> Approve
+                                    </button>
+                                )}
                             </div>
                         </div>
                     ))
                 )}
             </div>
-
             <div className="flex justify-center mt-4 gap-2">
 
                 <button

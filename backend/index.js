@@ -30,6 +30,9 @@ app.use("/api/category", categoryRouter);
 const variantRouter = require("./routes/variantRoutes");
 app.use("/api/variant", variantRouter);
 
+const notificationRouter = require("./routes/notificationRoutes");
+app.use("/api/notifications",notificationRouter);
+
 const PORT = 5000;
 app.listen(PORT, () => {
     console.log("server started");

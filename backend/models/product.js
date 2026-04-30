@@ -20,7 +20,12 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
     category_id: DataTypes.INTEGER,
-    is_active: DataTypes.BOOLEAN
+    is_active: DataTypes.BOOLEAN,
+    status: {
+      type: DataTypes.STRING,
+      defaultValue: 'Pending'
+    },
+    merchant_id: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Product',

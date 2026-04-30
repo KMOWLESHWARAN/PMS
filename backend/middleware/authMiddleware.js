@@ -48,4 +48,12 @@ const isAdmin = (req, res, next) => {
     }
     next();
 }
-module.exports = { protect, verifyToken, isAdmin };
+
+const isMerchantOrAdmin = (req, res, next) => {
+    if (req.user.role !== "admin" && req.user.role !== "merchant") {
+        return res.status(403).json({ message: "Access denied: Must be an Admin or Merchant" })
+    }
+    next();
+}
+
+module.exports = { protect, verifyToken, isAdmin, isMerchantOrAdmin };

@@ -12,6 +12,10 @@ export const updateProduct = (id, data) => {
     return API.put(`/products/${id}`, data);
 };
 
+export const approveProduct = (id) => {
+    return API.patch(`/products/approve/${id}`);
+};
+
 export const deleteProduct = (id) => {
     return API.delete(`/products/${id}`);
 };

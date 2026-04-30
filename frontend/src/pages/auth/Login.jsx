@@ -34,6 +34,7 @@ function Login() {
 
             if (res.data?.token) {
                 localStorage.setItem("token", res.data.token);
+                localStorage.setItem("user", JSON.stringify(res.data.user)); // Save user info including role
                 setEmail("");
                 setPassword("");
 

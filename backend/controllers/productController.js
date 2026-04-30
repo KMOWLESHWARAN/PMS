@@ -1,4 +1,4 @@
-const { Product, Category, Variant, sequelize } = require("../models");
+const { Product, Category, Variant, sequelize, Notification } = require("../models");
 const csv = require("csv-parser");
 const stream = require("stream");
 const { Parser } = require("json2csv");
@@ -8,13 +8,25 @@ const createProduct = async (req, res) => {
     try {
         const { title, description, brand, category_id, is_active } = req.body;
 
+        const productStatus = req.user.role === "admin" ? "Approved" : "Pending";
+        
         const product = await Product.create({
             title,
             description,
             brand,
             category_id,
             is_active,
+            status: productStatus,
+            merchant_id: req.user.id
         });
+
+        if (req.user.role === "merchant"){
+            await Notification.create({
+                message : `New product '${title}' has been created by merchant and is pending approval`,
+                role:'admin',
+                isRead:false
+            });
+        }
 
         res.status(201).json({
             message: "Product Created",
@@ -29,6 +41,7 @@ const createProduct = async (req, res) => {
 
 const getProducts = async (req, res) => {
     try {
+
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 3;
         const search = req.query.search || "";
@@ -38,24 +51,44 @@ const getProducts = async (req, res) => {
 
         const offset = (page - 1) * limit;
 
-        let where = {};
+        let conditions = [];
+
+        if (req.user.role === "merchant") {
+            conditions.push({
+                [Op.or]: [
+                    { status: "Approved" },
+                    { status: "APPROVED" },
+                    { merchant_id: req.user.id }
+                ]
+            });
+        } else if (req.user.role !== "admin") {
+            conditions.push({
+                status: { [Op.or]: ["Approved", "APPROVED"] }
+            });
+        }
+
         if (search) {
-            where[Op.or] = [
-                {
-                    [Op.and]: [
-                        sequelize.where(sequelize.fn('LOWER', sequelize.col('Product.title')), 'LIKE', `%${search.toLowerCase()}%`)
-                    ]
-                },
-                {
-                    [Op.and]: [
-                        sequelize.where(sequelize.fn('LOWER', sequelize.col('Product.brand')), 'LIKE', `%${search.toLowerCase()}%`)
-                    ]
-                }
-            ];
+            conditions.push({
+                [Op.or]: [
+                    {
+                        [Op.and]: [
+                            sequelize.where(sequelize.fn('LOWER', sequelize.col('Product.title')), 'LIKE', `%${search.toLowerCase()}%`)
+                        ]
+                    },
+                    {
+                        [Op.and]: [
+                            sequelize.where(sequelize.fn('LOWER', sequelize.col('Product.brand')), 'LIKE', `%${search.toLowerCase()}%`)
+                        ]
+                    }
+                ]
+            });
         }
+
         if (category !== "all" && category !== "") {
-            where.category_id = category;
+            conditions.push({ category_id: category });
         }
+
+        let where = conditions.length > 0 ? { [Op.and]: conditions } : {};
 
         console.log('Sequelize where clause:', where);
 
@@ -224,4 +257,22 @@ const exportProducts = async (req, res) => {
     }
 };
 
-module.exports = { createProduct, getProducts, updateProduct, deleteProduct, bulkImportProducts, exportProducts };
+const approveProduct = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const product = await Product.findByPk(id);
+
+        if (!product) {
+            return res.status(404).json({ message: "Product not found" });
+        }
+
+        await product.update({ status: "Approved" });
+
+        res.status(200).json({ message: "Product Approved Successfully", product });
+    } catch (err) {
+        console.error("Error approving product:", err);
+        res.status(500).json({ message: "Internal Error", error: err.message });
+    }
+};
+
+module.exports = { createProduct, getProducts, updateProduct, deleteProduct, bulkImportProducts, exportProducts, approveProduct };

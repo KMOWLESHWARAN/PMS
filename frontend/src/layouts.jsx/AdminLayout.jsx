@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { Link, useLocation, useSearchParams } from 'react-router-dom';
+import { Link, useLocation} from 'react-router-dom';
 import { LayoutDashboard, Package, Folder, Menu } from 'lucide-react';
+import Breadcrumbs from '../components/Breadcrumbs';
+import Navbar from '../components/Navbar';
 
 function AdminLayout({ children }) {
   const location = useLocation();
@@ -28,6 +30,8 @@ function AdminLayout({ children }) {
       </div>
 
       <div className="flex-1 bg-gray-100 p-6 overflow-y-auto">
+        <Navbar/>
+        <Breadcrumbs />
         {children}
       </div>
 
